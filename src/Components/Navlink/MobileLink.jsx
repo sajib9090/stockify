@@ -6,10 +6,28 @@ import { TbLogout2 } from "react-icons/tb";
 import { Link, useLocation } from "react-router-dom";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { LuTally5 } from "react-icons/lu";
+import { useDispatch, useSelector } from "react-redux";
+import { currentUser } from "../../redux/features/auth/authSlice";
+import { useLogoutMutation } from "../../redux/features/auth/authApi";
+import { toast } from "sonner";
 
 const MobileLink = ({ setIsMenuOpen }) => {
-  const user = {};
+  const user = useSelector(currentUser);
+  const [logout] = useLogoutMutation();
   const location = useLocation();
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    try {
+      const res = await logout().unwrap();
+      if (res?.success) {
+        dispatch(logout());
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.message || error?.message);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -99,6 +117,7 @@ const MobileLink = ({ setIsMenuOpen }) => {
       </Link>
       {user && (
         <button
+          onClick={() => handleLogout()}
           className={`flex w-full items-center justify-center px-6 space-x-2 py-3 text-lg hover:bg-[#009099] hover:text-white text-black
         `}
         >

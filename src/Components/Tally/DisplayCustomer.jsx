@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import CurrencyFormatter from "../../Components/CurrencyFormatter/CurrencyFormatter";
 
 const DisplayCustomer = ({ item }) => {
@@ -71,7 +72,10 @@ const DisplayCustomer = ({ item }) => {
       {/* Gradient background on hover */}
       <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      <div className="relative flex items-center gap-4">
+      <Link
+        to={`client-details/${item?.id}`}
+        className="relative flex items-center gap-4"
+      >
         {/* Avatar with ring effect */}
         <div className="flex-shrink-0 relative">
           <div className="absolute inset-0 bg-gray-400 rounded-full blur-md opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
@@ -94,7 +98,7 @@ const DisplayCustomer = ({ item }) => {
           <div className="flex items-center gap-2 mt-1">
             <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />
             <p className="text-sm text-gray-500">
-              {getTimeAgo(item?.updatedAt)}
+              {getTimeAgo(item?.updated_at)}
             </p>
           </div>
         </div>
@@ -113,7 +117,7 @@ const DisplayCustomer = ({ item }) => {
             <CurrencyFormatter value={item?.balance} />
           </div>
         </div>
-      </div>
+      </Link>
 
       {/* Decorative accent line */}
       <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#009099] transform scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-bottom" />

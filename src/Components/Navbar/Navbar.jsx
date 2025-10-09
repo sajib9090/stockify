@@ -7,10 +7,12 @@ import DesktopLink from "../Navlink/DesktopLink";
 import Profile from "../Profile/Profile";
 import defaultProfileImage from "../../assets/profile/403022_business man_male_user_avatar_profile_icon.png";
 import ProfileWithDropdown from "../ProfileWithDropdown/ProfileWithDropdown";
+import { useSelector } from "react-redux";
+import { currentUser } from "../../redux/features/auth/authSlice";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const user = {};
+  const user = useSelector(currentUser);
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -48,7 +50,7 @@ const Navbar = () => {
             </div>
           </div>
           <div>
-            <ProfileWithDropdown image={defaultProfileImage} />
+            <ProfileWithDropdown user={user} />
           </div>
         </div>
       </div>

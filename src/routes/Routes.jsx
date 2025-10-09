@@ -6,6 +6,7 @@ import Login from "../Pages/Login/Login";
 import SignUp from "../Pages/SignUp/SignUp";
 import AuthRoute from "./AuthRoute";
 const Tally = lazy(() => import("../Pages/Tally/Tally"));
+const SingleClient = lazy(() => import("../Pages/Tally/Client/SingleClient"));
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +31,14 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={<h1>Loading...</h1>}>
             <Tally />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/tally/client-details/:clientId",
+        element: (
+          <Suspense fallback={<h1>Loading...</h1>}>
+            <SingleClient />
           </Suspense>
         ),
       },

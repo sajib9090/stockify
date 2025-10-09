@@ -1,4 +1,222 @@
 @import "tailwindcss";
 
+/* Global Font Styles - Add this to your main CSS file (e.g., index.css or App.css) */
 
+/* Base font settings for the entire application */
+* {
+  font-weight: 300; /* Light font weight */
+  letter-spacing: 0.01em; /* Subtle letter spacing */
+}
 
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+h1 {
+  font-weight: 300;
+  letter-spacing: 0.025em;
+}
+
+h2 {
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+h3 {
+  font-weight: 400; /* Slightly bolder for readability */
+  letter-spacing: 0.015em;
+}
+
+/* Paragraphs and body text */
+p,
+span,
+div {
+  font-weight: 300;
+}
+
+/* Buttons */
+button {
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+/* Input fields */
+input,
+textarea,
+select {
+  font-weight: 300;
+}
+
+/* Labels */
+label {
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
+/* Links */
+a {
+  font-weight: 300;
+}
+
+/* Uppercase text (like labels) */
+.uppercase {
+  letter-spacing: 0.1em;
+}
+
+/* Small text */
+small,
+.text-xs,
+.text-sm {
+  font-weight: 300;
+  letter-spacing: 0.03em;
+}
+
+/* Large numbers/amounts */
+.text-xl,
+.text-2xl,
+.text-3xl,
+.text-4xl,
+.text-5xl {
+  font-weight: 300;
+}
+
+/* Bold text override (when you really need bold) */
+strong,
+b,
+.font-bold,
+.font-semibold {
+  font-weight: 400 !important; /* Use regular instead of bold */
+}
+
+/* Extra light for special cases */
+.font-extralight {
+  font-weight: 200;
+}
+
+/* Medium weight for critical UI elements */
+.font-medium {
+  font-weight: 400;
+}
+
+/* Tables */
+table,
+th,
+td {
+  font-weight: 300;
+}
+
+th {
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Lists */
+ul,
+ol,
+li {
+  font-weight: 300;
+}
+
+/* Code and pre */
+code,
+pre {
+  font-weight: 300;
+}
+
+/* Form elements specific */
+input::placeholder {
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+/* Card titles */
+.card-title,
+.section-title {
+  font-weight: 300;
+  letter-spacing: 0.03em;
+}
+
+/* Badges and pills */
+.badge,
+.pill {
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
+/* Navigation */
+nav a,
+nav button {
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
+/* Tooltips */
+.tooltip {
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+/* Modal content */
+.modal-title {
+  font-weight: 300;
+  letter-spacing: 0.03em;
+}
+
+.modal-body {
+  font-weight: 300;
+}
+
+/* Alerts and notifications */
+.alert {
+  font-weight: 300;
+}
+
+/* Sidebar */
+.sidebar a,
+.sidebar button {
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+/* Footer */
+footer {
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  * {
+    letter-spacing: 0.005em; /* Slightly reduce spacing on mobile */
+  }
+
+  button {
+    letter-spacing: 0.03em;
+  }
+}
+
+/* Override any third-party library bold fonts */
+.MuiTypography-root,
+.ant-typography,
+.chakra-text {
+  font-weight: 300 !important;
+}
+
+/* Ensure consistency across all components */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 300;
+}

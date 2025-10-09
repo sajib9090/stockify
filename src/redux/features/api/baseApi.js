@@ -160,7 +160,7 @@ const baseQueryWithRefreshToken = async (args, api, extraOptions) => {
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithRefreshToken,
-  tagTypes: ["User", "Brand"],
+  tagTypes: ["User", "Brand", "Client", "Transaction"],
   endpoints: () => ({}),
   // Add performance optimizations
   keepUnusedDataFor: 60, // Cache unused data for 60 seconds (default is 60)
