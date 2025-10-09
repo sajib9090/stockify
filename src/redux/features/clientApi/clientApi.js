@@ -3,7 +3,7 @@ import { baseApi } from "../api/baseApi";
 const clientApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getClients: builder.query({
-      query: () => "/clients/get-clients",
+      query: ({ searchTerm }) => `/clients/get-clients?search=${searchTerm}`,
       providesTags: ["Client"],
     }),
 
@@ -14,35 +14,20 @@ const clientApi = baseApi.injectEndpoints({
     }),
 
     // // ✅ LATEST: Object format for POST/PUT/DELETE
-    // createBrand: builder.mutation({
-    //   query: (data) => ({
-    //     url: "/brands",
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    //   invalidatesTags: ["Brand"],
-    // }),
-
-    // // ✅ LATEST: With query params
-    // searchBrands: builder.query({
-    //   query: ({ name, page = 1 }) => ({
-    //     url: "/brands/search",
-    //     params: { name, page }, // Modern way to add query params
-    //   }),
-    //   providesTags: ["Brand"],
-    // }),
-
-    // // ✅ LATEST: With custom headers
-    // getProtectedBrand: builder.query({
-    //   query: (id) => ({
-    //     url: `/brands/${id}/protected`,
-    //     headers: {
-    //       "X-Custom-Header": "value",
-    //     },
-    //   }),
-    //   providesTags: (result, error, id) => [{ type: "Brand", id }],
-    // }),
+    createClient: builder.mutation({
+      query: (data) => ({
+        url: "/clients/create-client",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Client"],
+    }),
+    
   }),
 });
 
-export const { useGetClientsQuery, useGetClientByIdQuery } = clientApi;
+export const {
+  useGetClientsQuery,
+  useGetClientByIdQuery,
+  useCreateClientMutation,
+} = clientApi;

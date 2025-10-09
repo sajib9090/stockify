@@ -8,15 +8,12 @@ const transactionApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Client", id }, // Invalidate specific client
-        "Transaction", // Invalidate all transactions
-      ],
+      invalidatesTags: ["Client", "Transaction"],
     }),
-    // getClients: builder.query({
-    //   query: () => "/clients/get-clients",
-    //   providesTags: ["Client"],
-    // }),
+    getTransactionByClientId: builder.query({
+      query: ({ id }) => `/transactions/get-transactions/${id}`,
+      providesTags: ["Client", "Transaction"],
+    }),
 
     // // ✅ LATEST: With parameters
     // getClientById: builder.query({
@@ -56,4 +53,5 @@ const transactionApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useAddTransactionMutation } = transactionApi;
+export const { useAddTransactionMutation, useGetTransactionByClientIdQuery } =
+  transactionApi;

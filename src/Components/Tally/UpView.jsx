@@ -1,6 +1,6 @@
 import CurrencyFormatter from "../CurrencyFormatter/CurrencyFormatter";
 
-const UpView = ({ totalDebit, totalCredit }) => {
+const UpView = ({ totalReceivable, totalPayable }) => {
   return (
     <div className="flex justify-between gap-6">
       {/* Total Due */}
@@ -11,7 +11,7 @@ const UpView = ({ totalDebit, totalCredit }) => {
           </span>
         </div>
         <div className="text-3xl font-light text-gray-900 mb-1">
-          <CurrencyFormatter value={totalDebit} />
+          <CurrencyFormatter value={totalPayable} />
         </div>
         <div className="flex items-center text-xs text-red-600 font-light">
           <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
@@ -27,7 +27,7 @@ const UpView = ({ totalDebit, totalCredit }) => {
           </span>
         </div>
         <div className="text-3xl font-light text-gray-900 mb-1">
-          <CurrencyFormatter value={totalCredit} />
+          <CurrencyFormatter value={totalReceivable} />
         </div>
         <div className="flex items-center text-xs text-green-600 font-light">
           <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>

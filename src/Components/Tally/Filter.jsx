@@ -1,7 +1,6 @@
 import { useState } from "react";
 
-const Filter = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+const Filter = ({ handleSearch, searchTerm }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const handleDownload = () => {
@@ -23,9 +22,9 @@ const Filter = () => {
         </label>
 
         <input
-          type="text"
+          type="search"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearch} // 👈 Use the function
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           className={`pr-4 border border-slate-200 rounded-md text-sm text-slate-900 lg:w-72 w-48 focus:outline-none focus:border-[#009099] focus:ring-1 focus:ring-[#009099] transition-all ${
@@ -33,6 +32,7 @@ const Filter = () => {
           } py-2`}
         />
       </div>
+
       {/* Right Side - Filter and Download */}
       <div className="flex gap-3">
         <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-md bg-white text-slate-600 text-sm font-medium hover:bg-slate-50 hover:border-slate-300 hover:text-[#009099] transition-all">

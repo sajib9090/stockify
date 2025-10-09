@@ -5,6 +5,7 @@ import { useGetClientByIdQuery } from "../../../redux/features/clientApi/clientA
 import CurrencyFormatter from "../../../Components/CurrencyFormatter/CurrencyFormatter";
 import { toast } from "sonner";
 import { useAddTransactionMutation } from "../../../redux/features/transactionApi/transactionApi";
+import Menu from "../../../Components/Tally/Menu";
 
 const SingleClient = () => {
   const { clientId } = useParams();
@@ -164,6 +165,10 @@ const SingleClient = () => {
             )}
           </div>
         </div>
+
+        <>
+          <Menu />
+        </>
       </div>
 
       {/* Due Amounts */}

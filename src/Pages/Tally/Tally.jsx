@@ -4,50 +4,68 @@ import Filter from "../../Components/Tally/Filter";
 import { UserRoundPlus } from "lucide-react";
 import DisplayCustomer from "../../Components/Tally/DisplayCustomer";
 import { useGetClientsQuery } from "../../redux/features/clientApi/clientApi";
+import AddClient from "../../Components/Tally/AddClient";
+import { useState } from "react";
 
 const Tally = () => {
-  const { data: items, error, isLoading } = useGetClientsQuery();
+  const [searchTerm, setSearchTerm] = useState("");
+  const {
+    data: items,
+    error,
+    isLoading,
+  } = useGetClientsQuery({ searchTerm: searchTerm || "" });
 
-  const totalDebit = items?.data?.reduce(
-    (sum, client) => sum + parseFloat(client?.debitSum || 0),
+  // Calculate how much customers owe you (positive balances)
+  const totalReceivable = items?.data?.reduce(
+    (sum, client) => sum + Math.max(0, parseFloat(client?.balance || 0)),
     0
   );
 
-  const totalCredit = items?.data?.reduce(
-    (sum, client) => sum + parseFloat(client?.creditSum || 0),
+  // Calculate how much you owe to customers (negative balances, shown as positive)
+  const totalPayable = items?.data?.reduce(
+    (sum, client) =>
+      sum + Math.abs(Math.min(0, parseFloat(client?.balance || 0))),
     0
   );
 
-  console.log(items);
+  // 🔹 Function to handle search input
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+  };
+  // console.log(items);
 
   return (
     <div className="p-4 min-h-screen">
       <div className="max-w-md border border-slate-200 rounded-lg bg-white">
         <div className="p-4">
-          <UpView totalDebit={totalDebit} totalCredit={totalCredit} />
+          <UpView
+            totalReceivable={totalReceivable}
+            totalPayable={totalPayable}
+          />
         </div>
 
-        <Filter />
+        <Filter handleSearch={handleSearch} searchTerm={searchTerm} />
         <div className="flex items-center justify-end text-xs text-slate-500 px-3">
           <p>Customer</p> <p className="mx-2">{items?.customerCount}</p>{" "}
           <p className="mr-2">/</p> <p>Supplier</p>{" "}
           <p className="mx-2">{items?.supplierCount}</p>
         </div>
 
-        <div className="p-4 flex justify-end">
-          <button className="flex items-center gap-2 bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded shadow-sm hover:bg-gray-300 active:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition duration-150 ease-in-out cursor-pointer">
-            <UserRoundPlus
-              size={24}
-              strokeWidth={2}
-              className="text-gray-700"
-            />
-          </button>
-        </div>
+        <AddClient />
 
         {/* customers and suppliers list will be here */}
         {[...(items?.data || [])]
-          .sort((a, b) => new Date(b?.updated_at) - new Date(a?.updated_at))
-          .map((item, index) => (
+          ?.sort((a, b) => {
+            const getLatestDate = (item) => {
+              const created = new Date(item?.created_at || 0);
+              const updated = new Date(item?.updated_at || 0);
+              return created > updated ? created : updated;
+            };
+
+            return getLatestDate(b) - getLatestDate(a);
+          })
+          ?.map((item, index) => (
             <DisplayCustomer key={index} item={item} />
           ))}
       </div>
