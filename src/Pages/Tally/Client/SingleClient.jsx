@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useLocation } from "react-router";
 import { useState } from "react";
 import { Calendar } from "lucide-react";
 import { useGetClientByIdQuery } from "../../../redux/features/clientApi/clientApi";
@@ -8,7 +8,9 @@ import { useAddTransactionMutation } from "../../../redux/features/transactionAp
 import Menu from "../../../Components/Tally/Menu";
 
 const SingleClient = () => {
-  const { clientId } = useParams();
+  const { search } = useLocation();
+  const queryParams = new URLSearchParams(search);
+  const clientId = queryParams.get("clientId");
   const [debit, setDebit] = useState("");
   const [credit, setCredit] = useState("");
   const [description, setDescription] = useState("");
@@ -274,6 +276,7 @@ const SingleClient = () => {
               onChange={(e) => setDate(e.target.value)}
               onFocus={() => setDateFocused(true)}
               onBlur={() => setDateFocused(false)}
+              max={new Date().toISOString().split("T")[0]}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009099] focus:border-transparent outline-none"
             />
           </div>

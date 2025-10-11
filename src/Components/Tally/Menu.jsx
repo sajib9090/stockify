@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
+import Report from "./Report";
 
 const Menu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,12 +19,13 @@ const Menu = () => {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50">
           <>
-            <button className="block w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100">
-              Report
-            </button>
+            <Report />
           </>
           <button className="block w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100">
             Edit
+          </button>
+          <button className="block w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100">
+            Delete
           </button>
 
           <button

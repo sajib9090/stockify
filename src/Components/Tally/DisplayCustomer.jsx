@@ -73,7 +73,7 @@ const DisplayCustomer = ({ item }) => {
       <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       <Link
-        to={`client-details/${item?.id}`}
+        to={`client-details?clientId=${item?.id}`}
         className="relative flex items-center gap-4"
       >
         {/* Avatar with ring effect */}

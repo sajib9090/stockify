@@ -7,6 +7,9 @@ import SignUp from "../Pages/SignUp/SignUp";
 import AuthRoute from "./AuthRoute";
 const Tally = lazy(() => import("../Pages/Tally/Tally"));
 const SingleClient = lazy(() => import("../Pages/Tally/Client/SingleClient"));
+const TransactionDetails = lazy(() =>
+  import("../Pages/Tally/TransactionDetails/TransactionDetails")
+);
 
 export const router = createBrowserRouter([
   {
@@ -35,10 +38,18 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/tally/client-details/:clientId",
+        path: "/tally/client-details",
         element: (
           <Suspense fallback={<h1>Loading...</h1>}>
             <SingleClient />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/tally/client-details/transactions",
+        element: (
+          <Suspense fallback={<h1>Loading...</h1>}>
+            <TransactionDetails />
           </Suspense>
         ),
       },

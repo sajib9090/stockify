@@ -14,22 +14,18 @@ const transactionApi = baseApi.injectEndpoints({
       query: ({ id }) => `/transactions/get-transactions/${id}`,
       providesTags: ["Client", "Transaction"],
     }),
+    getTransactionById: builder.query({
+      query: ({ id }) => `/transactions/get-transaction/${id}`,
+      providesTags: ["Transaction"],
+    }),
 
-    // // ✅ LATEST: With parameters
-    // getClientById: builder.query({
-    //   query: ({ id }) => `/clients/get-client/${id}`,
-    //   providesTags: (result, error, id) => [{ type: "Client", id }],
-    // }),
-
-    // // ✅ LATEST: Object format for POST/PUT/DELETE
-    // createBrand: builder.mutation({
-    //   query: (data) => ({
-    //     url: "/brands",
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    //   invalidatesTags: ["Brand"],
-    // }),
+    deleteTransactionById: builder.mutation({
+      query: ({ id }) => ({
+        url: `/transactions/delete-transaction/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Client", "Transaction"],
+    }),
 
     // // ✅ LATEST: With query params
     // searchBrands: builder.query({
@@ -53,5 +49,9 @@ const transactionApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useAddTransactionMutation, useGetTransactionByClientIdQuery } =
-  transactionApi;
+export const {
+  useAddTransactionMutation,
+  useGetTransactionByClientIdQuery,
+  useGetTransactionByIdQuery,
+  useDeleteTransactionByIdMutation,
+} = transactionApi;
