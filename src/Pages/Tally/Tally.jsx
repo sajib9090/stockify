@@ -1,7 +1,5 @@
 import UpView from "../../Components/Tally/UpView";
 import Filter from "../../Components/Tally/Filter";
-
-import { UserRoundPlus } from "lucide-react";
 import DisplayCustomer from "../../Components/Tally/DisplayCustomer";
 import { useGetClientsQuery } from "../../redux/features/clientApi/clientApi";
 import AddClient from "../../Components/Tally/AddClient";

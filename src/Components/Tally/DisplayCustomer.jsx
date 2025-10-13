@@ -82,11 +82,19 @@ const DisplayCustomer = ({ item }) => {
           <div
             className={`relative flex items-center justify-center h-14 w-14 rounded-full bg-gradient-to-br ${getAvatarGradient(
               item?.name
-            )} shadow-lg group-hover:shadow-2xl group-hover:scale-110 transition-all duration-300`}
+            )} shadow-lg group-hover:shadow-2xl group-hover:scale-110 transition-all duration-300 overflow-hidden`}
           >
-            <span className="text-white text-base font-bold">
-              {getInitials(item?.name)}
-            </span>
+            {item?.avatar_url ? (
+              <img
+                src={item?.avatar_url}
+                alt={item?.name}
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <span className="text-white text-base font-bold">
+                {getInitials(item?.name)}
+              </span>
+            )}
           </div>
         </div>
 

@@ -1,8 +1,10 @@
 import { useState, useRef } from "react";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import Report from "./Report";
+import DeleteClient from "./DeleteClient";
+import EditClient from "./EditClient";
 
-const Menu = () => {
+const Menu = ({ data }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuRef = useRef(null);
@@ -21,13 +23,12 @@ const Menu = () => {
           <>
             <Report />
           </>
-          <button className="block w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100">
-            Edit
-          </button>
-          <button className="block w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100">
-            Delete
-          </button>
-
+          <>
+            <EditClient data={data} />
+          </>
+          <>
+            <DeleteClient data={data} />
+          </>
           <button
             onClick={() => setIsOpen(false)}
             className="block w-full px-4 py-3 text-left text-sm text-gray-500 hover:bg-gray-100"

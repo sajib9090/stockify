@@ -153,11 +153,20 @@ const SingleClient = () => {
       {/* User Info Section */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <div className="flex items-center justify-center h-[50px] w-[50px] rounded-full bg-pink-200">
-            <h1 className="text-2xl font-bold">
-              {getInitials(data?.data?.name)}
-            </h1>
+          <div className="flex items-center justify-center h-[50px] w-[50px] rounded-full bg-pink-200 overflow-hidden">
+            {data?.data?.avatar_url ? (
+              <img
+                src={data.data.avatar_url}
+                alt={data.data.name}
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <h1 className="text-lg font-bold text-white">
+                {getInitials(data?.data?.name)}
+              </h1>
+            )}
           </div>
+
           <div>
             <h2 className="text-xl font-semibold capitalize">
               {data?.data?.name}
@@ -169,7 +178,7 @@ const SingleClient = () => {
         </div>
 
         <>
-          <Menu />
+          <Menu data={data?.data} />
         </>
       </div>
 
