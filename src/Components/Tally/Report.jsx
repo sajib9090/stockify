@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Modal from "../Modal/Modal";
 import { useGetTransactionByClientIdQuery } from "../../redux/features/transactionApi/transactionApi";
 import { useLocation, useNavigate } from "react-router";
+import { formatOnlyDate } from "../../Utils/time";
+import { formatAmount } from "../../Utils/formatAmount";
 
 const Report = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -76,22 +78,6 @@ const Report = () => {
     },
     [hasMore, loadMore]
   );
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  const formatAmount = (amount) => {
-    return parseFloat(amount || 0).toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
 
   const wrapDescription = (description) => {
     if (!description || description?.length <= 33) {
@@ -344,7 +330,9 @@ const Report = () => {
                                           d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                                         />
                                       </svg>
-                                      {formatDate(transaction?.created_date)}
+                                      {formatOnlyDate(
+                                        transaction?.created_date
+                                      )}
                                     </span>
                                     <span>•</span>
                                     <span className="flex items-center whitespace-nowrap">

@@ -1,40 +1,19 @@
-import { useState } from "react";
-import { Phone, Calendar, Tag } from "lucide-react";
+import { Phone, Calendar, MapPinHouseIcon } from "lucide-react";
 import { useGetBrandInfoQuery } from "../../redux/features/Brand/brandApi";
+import { formatDate } from "../../Utils/time";
+import Loading from "../../Components/Loading/Loading";
+import Error from "../../Components/Error/Error";
+import EditBrand from "../../Components/EditBrand/EditBrand";
 
 const Home = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const { data, isLoading, error } = useGetBrandInfoQuery();
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-800 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white border border-gray-300 rounded-lg p-6 max-w-md shadow-sm">
-          <p className="text-gray-900 font-semibold">Error loading data</p>
-          <p className="text-gray-600 text-sm mt-2">{error?.message}</p>
-        </div>
-      </div>
-    );
+    return <Error error={error} />;
   }
 
   const brandInfo = data?.data;
@@ -47,9 +26,9 @@ const Home = () => {
           {/* Brand Header */}
           <div className="border-b border-gray-200 p-8 md:p-12">
             <div className="flex items-center justify-center mb-6">
-              {brandInfo?.logo ? (
+              {brandInfo?.logo_id ? (
                 <img
-                  src={brandInfo?.logo}
+                  src={brandInfo?.logo_url}
                   alt={brandInfo?.name}
                   className="w-24 h-24 rounded-full border border-gray-300"
                 />
@@ -95,6 +74,35 @@ const Home = () => {
               </div>
             </div>
 
+            {/* Address */}
+            <div className="mt-12">
+              <div className="flex items-center mb-6">
+                <MapPinHouseIcon size={18} className="mr-3 text-gray-700" />
+                <h3 className="text-lg font-normal text-gray-900 tracking-wide">
+                  Address Information
+                </h3>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="border-l-2 border-gray-900 pl-4">
+                  <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">
+                    {brandInfo?.sub_district || "Sub District"}
+                  </p>
+                  <p className="text-xl font-light text-gray-900 capitalize">
+                    {brandInfo?.district || "District"}
+                  </p>
+                </div>
+
+                <div className="border-l-2 border-gray-300 pl-4">
+                  <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">
+                    Address
+                  </p>
+                  <p className="text-xl font-light text-gray-900 capitalize">
+                    {brandInfo?.address || "—"}
+                  </p>
+                </div>
+              </div>
+            </div>
             {/* Timestamps */}
             <div className="mt-12">
               <div className="flex items-center mb-6">
@@ -125,12 +133,8 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Action Button */}
-            <div className="mt-12 text-center">
-              <button className="bg-[#009099] hover:bg-[#00b8c3] text-white font-light py-3 px-12 rounded-sm transition duration-300 text-sm tracking-wider uppercase">
-                View Details
-              </button>
-            </div>
+            {/* Action section */}
+            <EditBrand brandInfo={brandInfo} />
           </div>
         </div>
       </div>

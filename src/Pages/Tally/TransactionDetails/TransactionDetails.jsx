@@ -2,15 +2,14 @@ import { useLocation } from "react-router";
 import { useGetTransactionByIdQuery } from "../../../redux/features/transactionApi/transactionApi";
 import {
   Edit2,
-  Trash2,
   Calendar,
   Clock,
   FileText,
-  DollarSign,
   ArrowDownCircle,
   ArrowUpCircle,
 } from "lucide-react";
 import DeleteTransaction from "../../../Components/Tally/DeleteTransaction";
+import { formatAmount } from "../../../Utils/formatAmount";
 
 const TransactionDetails = () => {
   const { search } = useLocation();
@@ -32,12 +31,7 @@ const TransactionDetails = () => {
     });
   };
 
-  const formatAmount = (amount) => {
-    return parseFloat(amount || 0).toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
+  
 
   if (isLoading) {
     return (

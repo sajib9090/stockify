@@ -1,62 +1,28 @@
-import { useState, useRef, useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import Modal from "../Modal/Modal";
-import { Phone, Save, User, X, Camera, Crop } from "lucide-react";
-import { useEditClientByIdMutation } from "../../redux/features/clientApi/clientApi";
-import { toast } from "sonner";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { formatDate } from "../../Utils/time";
+import { toast } from "sonner";
+import {
+  Building2Icon,
+  Camera,
+  Crop,
+  MapPinCheck,
+  NotebookPen,
+  Phone,
+  Save,
+  User,
+  X,
+} from "lucide-react";
+import { getCroppedImg } from "../../Utils/cropImage";
+import { useEditBrandMutation } from "../../redux/features/Brand/brandApi";
 
-
-// Utility function to get cropped image
-const getCroppedImg = (image, crop, fileName) => {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-
-  const scaleX = image.naturalWidth / image.width;
-  const scaleY = image.naturalHeight / image.height;
-
-  canvas.width = crop.width;
-  canvas.height = crop.height;
-
-  ctx.drawImage(
-    image,
-    crop.x * scaleX,
-    crop.y * scaleY,
-    crop.width * scaleX,
-    crop.height * scaleY,
-    0,
-    0,
-    crop.width,
-    crop.height
-  );
-
-  return new Promise((resolve) => {
-    canvas.toBlob(
-      (blob) => {
-        if (!blob) {
-          console.error("Canvas is empty");
-          return;
-        }
-        blob.name = fileName;
-        resolve(blob);
-      },
-      "image/jpeg",
-      0.95
-    );
-  });
-};
-
-const EditClient = ({ data }) => {
+const EditBrand = ({ brandInfo }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [editClientById, { isLoading }] = useEditClientByIdMutation();
-
-  // Image upload states
   const fileInputRef = useRef(null);
   const imgRef = useRef(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-
   // Crop states
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [originalImage, setOriginalImage] = useState(null);
@@ -71,9 +37,15 @@ const EditClient = ({ data }) => {
 
   // Form states
   const [formData, setFormData] = useState({
-    name: data?.name || "",
-    mobile: data?.mobile || "",
+    name: brandInfo?.name || "",
+    mobile_1: brandInfo?.mobile_1 || "",
+    mobile_2: brandInfo?.mobile_2 || "",
+    district: brandInfo?.district || "",
+    sub_district: brandInfo?.sub_district || "",
+    address: brandInfo?.address || "",
   });
+
+  const [editBrand, { isLoading }] = useEditBrandMutation();
 
   // ============ IMAGE UPLOAD & CROP FUNCTIONS ============
   const handleImageClick = () => {
@@ -198,13 +170,16 @@ const EditClient = ({ data }) => {
   const handleImageUpload = async (imageFormData) => {
     try {
       imageFormData.append("name", formData.name);
-      imageFormData.append("mobile", formData.mobile);
+      imageFormData.append("mobile_1", formData.mobile_1);
+      imageFormData.append("mobile_2", formData.mobile_2);
+      imageFormData.append("district", formData.district);
+      imageFormData.append("sub_district", formData.sub_district);
+      imageFormData.append("address", formData.address);
 
       const formDataObj = formDataToObject(imageFormData);
       console.log("FormData contents:", formDataObj);
 
-      const response = await editClientById({
-        id: data?.id,
+      const response = await editBrand({
         data: imageFormData,
       }).unwrap();
 
@@ -220,11 +195,9 @@ const EditClient = ({ data }) => {
 
   const handleFormUpdate = async (submitData) => {
     try {
-      const response = await editClientById({
-        id: data?.id,
+      const response = await editBrand({
         data: submitData,
       }).unwrap();
-
       if (response?.success) {
         toast.success("Client updated successfully");
         setIsOpen(false);
@@ -253,19 +226,19 @@ const EditClient = ({ data }) => {
         {previewImage ? (
           <img
             src={previewImage}
-            alt={data?.name}
+            alt={brandInfo?.name}
             className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg transition-opacity group-hover:opacity-75"
           />
         ) : (
           <div
             className={`w-20 h-20 rounded-full ${
-              data?.avatar_url ? "" : "bg-[#009099]"
+              brandInfo?.logo_url ? "" : "bg-[#009099]"
             } flex items-center justify-center border-4 border-white shadow-lg transition-opacity group-hover:opacity-75`}
           >
-            {data?.avatar_url ? (
+            {brandInfo?.logo_url ? (
               <img
-                src={data?.avatar_url}
-                alt={data?.name}
+                src={brandInfo?.logo_url}
+                alt={brandInfo?.name}
                 className="w-20 h-20 rounded-full object-cover"
               />
             ) : (
@@ -296,14 +269,15 @@ const EditClient = ({ data }) => {
 
   return (
     <>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="block w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-      >
-        Edit
-      </button>
+      <div className="mt-12 text-center">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="bg-[#009099] hover:bg-[#00b8c3] text-white font-light py-3 px-12 rounded-sm transition duration-300 text-sm tracking-wider uppercase"
+        >
+          Edit Details
+        </button>
+      </div>
 
-      {/* Main Edit Modal */}
       <Modal setIsOpen={setIsOpen} isOpen={isOpen} maxW={"max-w-lg"}>
         <div className="relative">
           {/* Header with gradient background */}
@@ -318,34 +292,13 @@ const EditClient = ({ data }) => {
             <div className="flex flex-col items-center">
               {getAvatarDisplay()}
               <p className="text-blue-100 text-md mt-1 capitalize">
-                {data?.name}
+                {brandInfo?.name}
               </p>
             </div>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="px-6 py-6">
-            {/* Client Info Badge */}
-            <div className="flex items-center gap-2 mb-6 p-3 bg-blue-50 rounded-lg border border-blue-100">
-              <div className="flex-1">
-                <p className="text-xs text-gray-500">Balance</p>
-                <p className="text-lg font-semibold text-gray-800">
-                  ৳
-                  {(
-                    parseFloat(data?.creditSum || 0) -
-                    parseFloat(data?.debitSum || 0)
-                  ).toFixed(2)}
-                </p>
-              </div>
-              <div className="h-10 w-px bg-blue-200" />
-              <div className="flex-1">
-                <p className="text-xs text-gray-500">Type</p>
-                <p className="text-sm font-medium text-gray-800 capitalize">
-                  {data?.type}
-                </p>
-              </div>
-            </div>
-
             {/* Name Field */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -374,11 +327,79 @@ const EditClient = ({ data }) => {
                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="tel"
-                  name="mobile"
-                  value={formData?.mobile}
+                  name="mobile_1"
+                  value={formData?.mobile_1}
                   onChange={handleChange}
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="Enter mobile number"
+                  required
+                />
+              </div>
+            </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mobile Number
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="tel"
+                  name="mobile_2"
+                  value={formData?.mobile_2}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Enter mobile number"
+                  required
+                />
+              </div>
+            </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                District
+              </label>
+              <div className="relative">
+                <NotebookPen className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="district"
+                  value={formData?.district}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Enter district"
+                  required
+                />
+              </div>
+            </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Sub District
+              </label>
+              <div className="relative">
+                <Building2Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="sub_district"
+                  value={formData?.sub_district}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Enter sub district"
+                  required
+                />
+              </div>
+            </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Address
+              </label>
+              <div className="relative">
+                <MapPinCheck className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="address"
+                  value={formData?.address}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Enter address"
                   required
                 />
               </div>
@@ -407,7 +428,7 @@ const EditClient = ({ data }) => {
           {/* Footer Info */}
           <div className="px-6 py-3 bg-gray-50 rounded-b-lg border-t border-gray-200">
             <p className="text-xs text-gray-500 text-center">
-              Last updated: {formatDate(data?.updated_at)}
+              Last updated: {new Date(brandInfo?.updated_at).toLocaleString()}
             </p>
           </div>
         </div>
@@ -483,4 +504,4 @@ const EditClient = ({ data }) => {
   );
 };
 
-export default EditClient;
+export default EditBrand;

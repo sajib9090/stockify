@@ -6,43 +6,15 @@ const brandApi = baseApi.injectEndpoints({
       query: () => "/brands/get-brand-info",
       providesTags: ["Brand"],
     }),
-
-    // // ✅ LATEST: With parameters
-    // getBrandById: builder.query({
-    //   query: (id) => `/brands/${id}`,
-    //   providesTags: (result, error, id) => [{ type: "Brand", id }],
-    // }),
-
-    // // ✅ LATEST: Object format for POST/PUT/DELETE
-    // createBrand: builder.mutation({
-    //   query: (data) => ({
-    //     url: "/brands",
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    //   invalidatesTags: ["Brand"],
-    // }),
-
-    // // ✅ LATEST: With query params
-    // searchBrands: builder.query({
-    //   query: ({ name, page = 1 }) => ({
-    //     url: "/brands/search",
-    //     params: { name, page }, // Modern way to add query params
-    //   }),
-    //   providesTags: ["Brand"],
-    // }),
-
-    // // ✅ LATEST: With custom headers
-    // getProtectedBrand: builder.query({
-    //   query: (id) => ({
-    //     url: `/brands/${id}/protected`,
-    //     headers: {
-    //       "X-Custom-Header": "value",
-    //     },
-    //   }),
-    //   providesTags: (result, error, id) => [{ type: "Brand", id }],
-    // }),
+    editBrand: builder.mutation({
+      query: ({ data }) => ({
+        url: `/brands/edit-brand-info`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Brand"],
+    }),
   }),
 });
 
-export const { useGetBrandInfoQuery } = brandApi;
+export const { useGetBrandInfoQuery, useEditBrandMutation } = brandApi;
