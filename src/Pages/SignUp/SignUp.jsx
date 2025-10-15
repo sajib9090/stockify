@@ -1,14 +1,29 @@
-import React, { useState } from "react";
-import { Eye, EyeOff, Mail, Lock, Check, X, User } from "lucide-react";
-import { Link } from "react-router";
+import { useState } from "react";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  Check,
+  X,
+  User,
+  PhoneCall,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { useRegisterUserMutation } from "../../redux/features/auth/authApi";
+import { toast } from "sonner";
 
 const SignUp = () => {
   const [name, setName] = useState("");
-  const [emailOrMobile, setEmailOrMobile] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
+
+  const [registerUser, { isLoading }] = useRegisterUserMutation();
 
   // Password validation
   const hasMinLength = password.length >= 8;
@@ -16,12 +31,27 @@ const SignUp = () => {
   const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(password);
   const hasCapital = /[A-Z]/.test(password);
 
-  const handleSubmit = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      console.log("Sign up attempt:", { name, emailOrMobile, password });
-      setIsLoading(false);
-    }, 1500);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!name || !email || !mobile || !password) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+    try {
+      const credentials = {
+        name,
+        email,
+        mobile,
+        password,
+      };
+      const res = await registerUser(credentials).unwrap();
+      // if (res?.success) {
+      //   navigate(`/verify/verify-email?email=${email}`);
+      // }
+    } catch (error) {
+      setErrorMessage(error?.data?.message || "Registration failed");
+      toast.error(error?.data?.message || "Registration failed");
+    }
   };
 
   const ValidationItem = ({ isValid, text }) => (
@@ -52,6 +82,11 @@ const SignUp = () => {
           </div>
 
           <div className="space-y-5">
+            {errorMessage && (
+              <div className="text-red-600 text-sm text-center bg-red-50 py-2 px-3 rounded border border-red-200">
+                {errorMessage}
+              </div>
+            )}
             {/* Name Input */}
             <div className="relative">
               <input
@@ -74,26 +109,48 @@ const SignUp = () => {
               <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             </div>
 
-            {/* Email or Mobile Input */}
+            {/* Email Input */}
             <div className="relative">
               <input
-                type="text"
-                id="emailOrMobile"
-                value={emailOrMobile}
-                onChange={(e) => setEmailOrMobile(e.target.value)}
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-teal-500 focus:outline-none transition-all duration-200"
               />
               <label
-                htmlFor="emailOrMobile"
+                htmlFor="email"
                 className={`absolute left-3 transition-all duration-200 pointer-events-none bg-white px-2 ${
-                  emailOrMobile
+                  email
                     ? "-top-3 text-sm text-teal-600"
                     : "top-1/2 -translate-y-1/2 text-base text-gray-500"
                 }`}
               >
-                Email or Mobile
+                Email
               </label>
               <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            </div>
+
+            {/* Mobile Input */}
+            <div className="relative">
+              <input
+                type="tel"
+                id="mobile"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-teal-500 focus:outline-none transition-all duration-200"
+              />
+              <label
+                htmlFor="mobile"
+                className={`absolute left-3 transition-all duration-200 pointer-events-none bg-white px-2 ${
+                  mobile
+                    ? "-top-3 text-sm text-teal-600"
+                    : "top-1/2 -translate-y-1/2 text-base text-gray-500"
+                }`}
+              >
+                Mobile
+              </label>
+              <PhoneCall className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             </div>
 
             {/* Password Input */}
@@ -131,13 +188,7 @@ const SignUp = () => {
             </div>
 
             {/* Password Validation Visual */}
-            <div
-              className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                isFocused || password
-                  ? "max-h-48 opacity-100"
-                  : "max-h-0 opacity-0"
-              }`}
-            >
+            {(isFocused || password) && (
               <div className="bg-gray-50 rounded-lg p-4 space-y-2 border border-gray-200">
                 <p className="text-xs font-semibold text-gray-600 mb-2">
                   Password must contain:
@@ -159,15 +210,22 @@ const SignUp = () => {
                   text="At least one symbol (!@#$%...)"
                 />
               </div>
-            </div>
+            )}
 
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={isLoading}
+              disabled={
+                isLoading ||
+                !name ||
+                !email ||
+                !mobile ||
+                !password ||
+                !(hasMinLength && hasCapital && hasNumber && hasSymbol)
+              }
               className="w-full bg-teal-500 text-white py-3 rounded-lg font-semibold 
               hover:bg-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/30 
-              transition-all duration-200 shadow disabled:opacity-50 disabled:cursor-not-allowed"
+              transition-all duration-200 shadow disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center">

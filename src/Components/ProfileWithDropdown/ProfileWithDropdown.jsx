@@ -1,19 +1,40 @@
 import { useState } from "react";
 import defaultProfileImage from "../../assets/profile/403022_business man_male_user_avatar_profile_icon.png";
+import EditProfile from "../../Components/EditProfile/EditProfile";
+import { useLogoutUserMutation } from "../../redux/features/auth/authApi";
+import { useDispatch } from "react-redux";
+import { logout } from "../../redux/features/auth/authSlice";
+import { toast } from "sonner";
 
 const ProfileWithDropdown = ({ user }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [logoutUser] = useLogoutUserMutation();
+  const dispatch = useDispatch();
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await logoutUser().unwrap();
+      if (res?.success) {
+        dispatch(logout());
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.message || error?.message);
+    }
   };
   return (
     <>
       <div className="relative cursor-pointer" onClick={toggleDropdown}>
         <img
-          src={defaultProfileImage}
+          src={user?.avatar_url || defaultProfileImage}
           alt="profile"
           height={42}
+          width={42}
           className="rounded-full"
         />
         <span className="absolute bottom-0 right-0 w-[10px] h-[10px] bg-green-500 border border-white rounded-full"></span>
@@ -29,18 +50,30 @@ const ProfileWithDropdown = ({ user }) => {
           </div>
 
           <ul className="py-2">
-            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+            <li
+              onClick={() => setIsOpen(!isOpen)}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            >
               Profile
             </li>
-            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-              Settings
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-              Logout
-            </li>
+
+            {user && user?.id ? (
+              <>
+                <li
+                  onClick={() => handleLogout()}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  Logout
+                </li>
+              </>
+            ) : (
+              ""
+            )}
           </ul>
         </div>
       )}
+
+      <EditProfile isOpen={isOpen} setIsOpen={setIsOpen} user={user} />
     </>
   );
 };

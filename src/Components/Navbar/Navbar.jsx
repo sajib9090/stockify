@@ -5,28 +5,21 @@ import defaultLogo from "../../assets/logo/pngwing.com.png";
 import MobileLink from "../Navlink/MobileLink";
 import DesktopLink from "../Navlink/DesktopLink";
 import Profile from "../Profile/Profile";
-import defaultProfileImage from "../../assets/profile/403022_business man_male_user_avatar_profile_icon.png";
 import ProfileWithDropdown from "../ProfileWithDropdown/ProfileWithDropdown";
-import { useSelector } from "react-redux";
-import { currentUser } from "../../redux/features/auth/authSlice";
 
-const Navbar = () => {
+const Navbar = ({ user, brand }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const user = useSelector(currentUser);
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
   return (
     <>
       {/* large screen */}
       <div className="w-[256px] bg-slate-100 min-h-[calc(100vh-115px)] hidden sm:hidden md:hidden lg:block shadow sticky top-[80px] z-50">
         <div className="flex items-center justify-center pt-6">
-          <Profile
-            image={user?.avatar?.url || defaultProfileImage}
-            name={user?.name}
-            role={user?.role}
-          />
+          <Profile user={user} />
         </div>
         {/* menu items */}
         <DesktopLink />
@@ -41,11 +34,17 @@ const Navbar = () => {
           </div>
           <div className="flex items-center space-x-4">
             <div>
-              <img src={defaultLogo} alt="logo" width={50} height={50} />
+              <img
+                className="rounded-full"
+                src={brand?.logo_url || defaultLogo}
+                alt="logo"
+                width={50}
+                height={50}
+              />
             </div>
             <div className="hidden sm:block">
-              <p className="text-lg font-semibold">
-                {user?.brand?.pharmacy_name}
+              <p className="text-lg font-semibold capitalize">
+                {brand?.name || "Your Brand"}
               </p>
             </div>
           </div>
@@ -63,9 +62,15 @@ const Navbar = () => {
       >
         <div className="flex justify-between items-center p-4">
           <div className="flex items-center space-x-2">
-            <img src={defaultLogo} alt="logo" width={50} height={50} />
-            <p className="text-white text-xl font-bold">
-              {user?.brand?.pharmacy_name}
+            <img
+              className="rounded-full"
+              src={brand?.logo_url || defaultLogo}
+              alt="logo"
+              width={50}
+              height={50}
+            />
+            <p className="text-white text-xl font-bold capitalize">
+              {brand?.name || "Your brand"}
             </p>
           </div>
           <button onClick={handleMenuToggle}>

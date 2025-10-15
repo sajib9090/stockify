@@ -1,28 +1,21 @@
-import { useCallback, useRef, useState } from "react";
-import Modal from "../Modal/Modal";
-import ReactCrop from "react-image-crop";
-import "react-image-crop/dist/ReactCrop.css";
 import { toast } from "sonner";
-import {
-  Building2Icon,
-  Camera,
-  Crop,
-  MapPinCheck,
-  NotebookPen,
-  Phone,
-  Save,
-  User,
-  X,
-} from "lucide-react";
+import { useEditUserProfileMutation } from "../../redux/features/auth/authApi";
+import Modal from "../Modal/Modal";
+import { Camera, Crop, Save, User, X } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
 import { getCroppedImg } from "../../Utils/cropImage";
-import { useEditBrandMutation } from "../../redux/features/Brand/brandApi";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/features/auth/authSlice";
+import ReactCrop from "react-image-crop";
 
-const EditBrand = ({ brandInfo }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const EditProfile = ({ isOpen, setIsOpen, user }) => {
+  const [editUserProfile, { isLoading }] = useEditUserProfileMutation();
+  // Image upload states
   const fileInputRef = useRef(null);
   const imgRef = useRef(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+
   // Crop states
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [originalImage, setOriginalImage] = useState(null);
@@ -37,15 +30,11 @@ const EditBrand = ({ brandInfo }) => {
 
   // Form states
   const [formData, setFormData] = useState({
-    name: brandInfo?.name || "",
-    mobile_1: brandInfo?.mobile_1 || "",
-    mobile_2: brandInfo?.mobile_2 || "",
-    district: brandInfo?.district || "",
-    sub_district: brandInfo?.sub_district || "",
-    address: brandInfo?.address || "",
+    name: user?.name || "",
+    mobile: user?.mobile || "",
   });
 
-  const [editBrand, { isLoading }] = useEditBrandMutation();
+  const dispatch = useDispatch();
 
   // ============ IMAGE UPLOAD & CROP FUNCTIONS ============
   const handleImageClick = () => {
@@ -149,42 +138,22 @@ const EditBrand = ({ brandInfo }) => {
     }));
   };
 
-  const formDataToObject = (formData) => {
-    const obj = {};
-    for (let [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        obj[key] = {
-          name: value.name,
-          size: value.size,
-          type: value.type,
-          isFile: true,
-        };
-      } else {
-        obj[key] = value;
-      }
-    }
-    return obj;
-  };
-
   // ============ API HANDLERS ============
   const handleImageUpload = async (imageFormData) => {
     try {
       imageFormData.append("name", formData.name);
-      imageFormData.append("mobile_1", formData.mobile_1);
-      imageFormData.append("mobile_2", formData.mobile_2);
-      imageFormData.append("district", formData.district);
-      imageFormData.append("sub_district", formData.sub_district);
-      imageFormData.append("address", formData.address);
 
-      const formDataObj = formDataToObject(imageFormData);
-      console.log("FormData contents:", formDataObj);
-
-      const response = await editBrand({
+      const response = await editUserProfile({
         data: imageFormData,
       }).unwrap();
 
+      const user = {
+        user: response?.user,
+      };
+
       if (response?.success) {
-        toast.success("Client updated successfully");
+        toast.success("User updated successfully");
+        dispatch(setUser(user));
         setIsOpen(false);
         resetImage();
       }
@@ -195,11 +164,17 @@ const EditBrand = ({ brandInfo }) => {
 
   const handleFormUpdate = async (submitData) => {
     try {
-      const response = await editBrand({
+      const response = await editUserProfile({
         data: submitData,
       }).unwrap();
+
+      const user = {
+        user: response?.user,
+      };
+
       if (response?.success) {
-        toast.success("Client updated successfully");
+        toast.success("User updated successfully");
+        dispatch(setUser(user));
         setIsOpen(false);
       }
     } catch (error) {
@@ -226,19 +201,19 @@ const EditBrand = ({ brandInfo }) => {
         {previewImage ? (
           <img
             src={previewImage}
-            alt={brandInfo?.name}
+            alt={user?.name}
             className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg transition-opacity group-hover:opacity-75"
           />
         ) : (
           <div
             className={`w-20 h-20 rounded-full ${
-              brandInfo?.logo_url ? "" : "bg-[#009099]"
+              user?.avatar_url ? "" : "bg-[#009099]"
             } flex items-center justify-center border-4 border-white shadow-lg transition-opacity group-hover:opacity-75`}
           >
-            {brandInfo?.logo_url ? (
+            {user?.avatar_url ? (
               <img
-                src={brandInfo?.logo_url}
-                alt={brandInfo?.name}
+                src={user?.avatar_url}
+                alt={user?.name}
                 className="w-20 h-20 rounded-full object-cover"
               />
             ) : (
@@ -266,19 +241,9 @@ const EditBrand = ({ brandInfo }) => {
       </div>
     );
   };
-
   return (
     <>
-      <div className="mt-12 text-center">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="bg-[#009099] hover:bg-[#00b8c3] text-white font-light py-3 px-12 rounded-sm transition duration-300 text-sm tracking-wider uppercase"
-        >
-          Edit Details
-        </button>
-      </div>
-
-      <Modal setIsOpen={setIsOpen} isOpen={isOpen} maxW={"max-w-lg"}>
+      <Modal isOpen={isOpen} setIsOpen={setIsOpen} maxW={"max-w-lg"}>
         <div className="relative">
           {/* Header with gradient background */}
           <div className="bg-[#009099] px-6 py-8 rounded-t-lg">
@@ -292,7 +257,7 @@ const EditBrand = ({ brandInfo }) => {
             <div className="flex flex-col items-center">
               {getAvatarDisplay()}
               <p className="text-blue-100 text-md mt-1 capitalize">
-                {brandInfo?.name}
+                {user?.name}
               </p>
             </div>
           </div>
@@ -312,94 +277,7 @@ const EditBrand = ({ brandInfo }) => {
                   value={formData?.name}
                   onChange={handleChange}
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Enter client name"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Mobile Field */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Mobile Number
-              </label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="tel"
-                  name="mobile_1"
-                  value={formData?.mobile_1}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Enter mobile number"
-                  required
-                />
-              </div>
-            </div>
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Mobile Number
-              </label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="tel"
-                  name="mobile_2"
-                  value={formData?.mobile_2}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Enter mobile number"
-                  required
-                />
-              </div>
-            </div>
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                District
-              </label>
-              <div className="relative">
-                <NotebookPen className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  name="district"
-                  value={formData?.district}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Enter district"
-                  required
-                />
-              </div>
-            </div>
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Sub District
-              </label>
-              <div className="relative">
-                <Building2Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  name="sub_district"
-                  value={formData?.sub_district}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Enter sub district"
-                  required
-                />
-              </div>
-            </div>
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Address
-              </label>
-              <div className="relative">
-                <MapPinCheck className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  name="address"
-                  value={formData?.address}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Enter address"
+                  placeholder="Enter User name"
                   required
                 />
               </div>
@@ -424,13 +302,6 @@ const EditBrand = ({ brandInfo }) => {
               </button>
             </div>
           </form>
-
-          {/* Footer Info */}
-          <div className="px-6 py-3 bg-gray-50 rounded-b-lg border-t border-gray-200">
-            <p className="text-xs text-gray-500 text-center">
-              Last updated: {new Date(brandInfo?.updated_at).toLocaleString()}
-            </p>
-          </div>
         </div>
       </Modal>
 
@@ -504,4 +375,4 @@ const EditBrand = ({ brandInfo }) => {
   );
 };
 
-export default EditBrand;
+export default EditProfile;

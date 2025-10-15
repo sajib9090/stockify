@@ -30,11 +30,13 @@ const ModernLoginPage = () => {
 
     try {
       const res = await login(data).unwrap();
-      const token = res?.accessToken;
+      // const token = res?.accessToken;
+
+      // console.log(token);
 
       const user = {
         user: res?.user,
-        token: token,
+        // token: token,
       };
       dispatch(setUser(user));
       navigate("/");
