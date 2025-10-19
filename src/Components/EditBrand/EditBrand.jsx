@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Modal from "../Modal/Modal";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
@@ -37,15 +37,29 @@ const EditBrand = ({ brandInfo }) => {
 
   // Form states
   const [formData, setFormData] = useState({
-    name: brandInfo?.name || "",
-    mobile_1: brandInfo?.mobile_1 || "",
-    mobile_2: brandInfo?.mobile_2 || "",
-    district: brandInfo?.district || "",
-    sub_district: brandInfo?.sub_district || "",
-    address: brandInfo?.address || "",
+    name: "",
+    mobile_1: "",
+    mobile_2: "",
+    district: "",
+    sub_district: "",
+    address: "",
   });
 
   const [editBrand, { isLoading }] = useEditBrandMutation();
+
+  // Update form data when brandInfo changes or modal opens
+  useEffect(() => {
+    if (brandInfo && isOpen) {
+      setFormData({
+        name: brandInfo?.name || "",
+        mobile_1: brandInfo?.mobile_1 || "",
+        mobile_2: brandInfo?.mobile_2 || "",
+        district: brandInfo?.district || "",
+        sub_district: brandInfo?.sub_district || "",
+        address: brandInfo?.address || "",
+      });
+    }
+  }, [brandInfo, isOpen]);
 
   // ============ IMAGE UPLOAD & CROP FUNCTIONS ============
   const handleImageClick = () => {
@@ -149,23 +163,6 @@ const EditBrand = ({ brandInfo }) => {
     }));
   };
 
-  const formDataToObject = (formData) => {
-    const obj = {};
-    for (let [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        obj[key] = {
-          name: value.name,
-          size: value.size,
-          type: value.type,
-          isFile: true,
-        };
-      } else {
-        obj[key] = value;
-      }
-    }
-    return obj;
-  };
-
   // ============ API HANDLERS ============
   const handleImageUpload = async (imageFormData) => {
     try {
@@ -175,9 +172,6 @@ const EditBrand = ({ brandInfo }) => {
       imageFormData.append("district", formData.district);
       imageFormData.append("sub_district", formData.sub_district);
       imageFormData.append("address", formData.address);
-
-      const formDataObj = formDataToObject(imageFormData);
-      console.log("FormData contents:", formDataObj);
 
       const response = await editBrand({
         data: imageFormData,
