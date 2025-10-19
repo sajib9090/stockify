@@ -45,9 +45,10 @@ const SignUp = () => {
         password,
       };
       const res = await registerUser(credentials).unwrap();
-      // if (res?.success) {
-      //   navigate(`/verify/verify-email?email=${email}`);
-      // }
+
+      if (res?.success) {
+        navigate(`/verify/verify-email?email=${email}`);
+      }
     } catch (error) {
       setErrorMessage(error?.data?.message || "Registration failed");
       toast.error(error?.data?.message || "Registration failed");

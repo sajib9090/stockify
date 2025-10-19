@@ -30,6 +30,36 @@ const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    otpVerify: builder.mutation({
+      query: (data) => ({
+        url: `/users/user/verify-otp/${data?.email}`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
+    regenerateOTP: builder.mutation({
+      query: ({ email }) => ({
+        url: `/users/user/regenerate-otp/${email}`,
+        method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
+    forgotPassword: builder.mutation({
+      query: ({ email }) => ({
+        url: `/users/user/forgot-password/${email}`,
+        method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
+    setNewPassword: builder.mutation({
+      query: (data) => ({
+        url: `/users/user/set-password`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -38,4 +68,8 @@ export const {
   useLoginMutation,
   useLogoutUserMutation,
   useEditUserProfileMutation,
+  useOtpVerifyMutation,
+  useRegenerateOTPMutation,
+  useForgotPasswordMutation,
+  useSetNewPasswordMutation,
 } = authApi;

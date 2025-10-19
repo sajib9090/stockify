@@ -6,6 +6,8 @@ import Login from "../Pages/Login/Login";
 import SignUp from "../Pages/SignUp/SignUp";
 import AuthRoute from "./AuthRoute";
 import VerifyOTP from "../Pages/VerifyOTP/VerifyOTP";
+import ForgotPassword from "../Pages/ForgotPassword/ForgotPassword";
+import ResetPassword from "../Pages/ResetPassword/ResetPassword";
 const Tally = lazy(() => import("../Pages/Tally/Tally"));
 const SingleClient = lazy(() => import("../Pages/Tally/Client/SingleClient"));
 const TransactionDetails = lazy(() =>
@@ -69,6 +71,16 @@ export const router = createBrowserRouter([
   {
     path: "/verify/verify-email",
     element: <VerifyOTP />,
+    errorElement: <h1>error</h1>,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+    errorElement: <h1>error</h1>,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
     errorElement: <h1>error</h1>,
   },
 ]);

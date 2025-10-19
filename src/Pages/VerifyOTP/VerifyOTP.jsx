@@ -1,16 +1,25 @@
 import { useState, useRef, useEffect } from "react";
 import { Mail, Shield, ArrowLeft, Clock } from "lucide-react";
 import { Link, useSearchParams, useNavigate } from "react-router";
+import {
+  useOtpVerifyMutation,
+  useRegenerateOTPMutation,
+} from "../../redux/features/auth/authApi";
+import { toast } from "sonner";
 
 const VerifyOTP = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(30);
   const [canResend, setCanResend] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const email = searchParams.get("email");
+
+  const [verifyOtp, { isLoading: otpLoading }] = useOtpVerifyMutation();
+  const [regenerateOTP, { isLoading: regenerateLoading }] =
+    useRegenerateOTPMutation();
 
   const inputRefs = useRef([]);
 
@@ -101,13 +110,19 @@ const VerifyOTP = () => {
 
     try {
       // Add your OTP verification API call here
-      // const res = await verifyOtp({ email, otp: otpValue }).unwrap();
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // On success, navigate to login or home
-      navigate("/login");
+      const data = {
+        email: email,
+        otp: otpValue,
+      };
+      const res = await verifyOtp(data).unwrap();
+      if (res?.success) {
+        if (searchParams.get("context") === "forgot-password") {
+          toast.success("OTP verified! You can now reset your password.");
+          return navigate(`/reset-password?email=${email}`);
+        } else {
+          navigate("/login");
+        }
+      }
     } catch (error) {
       setErrorMessage(error?.data?.message || "Invalid OTP. Please try again.");
     } finally {
@@ -120,20 +135,24 @@ const VerifyOTP = () => {
 
     setErrorMessage("");
     setOtp(["", "", "", "", "", ""]);
-    setTimeLeft(120); // Reset to 2 minutes
+    setTimeLeft(30);
     setCanResend(false);
 
     try {
-      // Add your resend OTP API call here
-      // await resendOtp({ email }).unwrap();
-      console.log("Resending OTP to:", email);
-
-      // Focus first input after resend
-      if (inputRefs.current[0]) {
-        inputRefs.current[0].focus();
+      const response = await regenerateOTP({ email: email }).unwrap();
+      if (response?.success) {
+        // Focus first input after resend
+        if (inputRefs.current[0]) {
+          inputRefs.current[0].focus();
+        }
+        toast.success("A new OTP has been sent to your email.");
       }
     } catch (error) {
-      setErrorMessage("Failed to resend code. Please try again.");
+      setErrorMessage(
+        error?.message ||
+          error?.data?.message ||
+          "Failed to resend code. Please try again."
+      );
     }
   };
 
@@ -237,12 +256,12 @@ const VerifyOTP = () => {
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={!isComplete || isLoading || isExpired}
+              disabled={!isComplete || isLoading || isExpired || otpLoading}
               className="w-full bg-teal-500 text-white py-3 rounded-lg font-semibold 
               hover:bg-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-500/30 
               transition-all duration-200 shadow disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {isLoading ? (
+              {isLoading || otpLoading ? (
                 <div className="flex items-center justify-center">
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                   Verifying...
@@ -258,14 +277,16 @@ const VerifyOTP = () => {
                 Didn't receive the code?{" "}
                 <button
                   onClick={handleResend}
-                  disabled={!canResend || isExpired}
+                  disabled={
+                    !canResend || regenerateLoading || isLoading || otpLoading
+                  }
                   className={`font-semibold ${
                     canResend
                       ? "text-teal-600 hover:text-teal-700 cursor-pointer"
                       : "text-gray-400 cursor-not-allowed"
                   }`}
                 >
-                  Resend
+                  {regenerateLoading ? "Resending..." : "Resend Code"}
                 </button>
               </p>
             </div>

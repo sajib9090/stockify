@@ -1,48 +1,46 @@
 import { useState } from "react";
-import { Eye, EyeOff, Mail, Lock, Check, X } from "lucide-react";
-import { Link, useNavigate } from "react-router";
-import { useLoginMutation } from "../../redux/features/auth/authApi";
-import { useDispatch } from "react-redux";
-import { setUser } from "../../redux/features/auth/authSlice";
+import { Eye, EyeOff, Lock, Check, X } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router";
+import { useSetNewPasswordMutation } from "../../redux/features/auth/authApi";
 
-const ModernLoginPage = () => {
-  const [emailOrMobile, setEmailOrMobile] = useState("");
+const ResetPassword = () => {
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [searchParams] = useSearchParams();
 
   // Password validation
   const hasMinLength = password.length >= 8;
   const hasNumber = /\d/.test(password);
   const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(password);
   const hasCapital = /[A-Z]/.test(password);
+  const passwordsMatch = password === confirmPassword && confirmPassword !== "";
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [login, { isLoading }] = useLoginMutation();
+  const [setNewPassword, { isLoading }] = useSetNewPasswordMutation();
   const handleSubmit = async () => {
     setErrorMessage("");
+
+    if (!passwordsMatch) {
+      setErrorMessage("Passwords do not match");
+      return;
+    }
+
     const data = {
-      email_mobile: emailOrMobile,
-      password: password,
+      email: searchParams.get("email"),
+      new_password: password,
     };
 
     try {
-      const res = await login(data).unwrap();
+      const res = await setNewPassword(data).unwrap();
 
-      const user = {
-        user: res?.user,
-      };
-      dispatch(setUser(user));
-      navigate("/");
-    } catch (error) {
-      if (
-        error?.message ||
-        error?.data?.message === "Your account is not active yet."
-      ) {
-        return navigate(`/verify/verify-email?email=${data?.email_mobile}`);
+      if (res?.success) {
+        navigate("/login");
       }
+    } catch (error) {
       setErrorMessage(error?.data?.message);
     }
   };
@@ -68,11 +66,9 @@ const ModernLoginPage = () => {
             <div className="inline-flex items-center justify-center w-14 h-14 bg-teal-500 rounded-xl mb-4">
               <Lock className="w-7 h-7 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">
-              Welcome Back
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-1">Password</h2>
             <p className="text-gray-500 text-sm">
-              Sign in to continue to your account
+              Choose strong password to secure your account
             </p>
           </div>
 
@@ -82,26 +78,6 @@ const ModernLoginPage = () => {
                 {errorMessage}
               </div>
             )}
-            <div className="relative">
-              <input
-                type="text"
-                id="emailOrMobile"
-                value={emailOrMobile}
-                onChange={(e) => setEmailOrMobile(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-teal-500 focus:outline-none transition-all duration-200"
-              />
-              <label
-                htmlFor="emailOrMobile"
-                className={`absolute left-3 transition-all duration-200 pointer-events-none bg-white px-2 ${
-                  emailOrMobile
-                    ? "-top-3 text-sm text-teal-600"
-                    : "top-1/2 -translate-y-1/2 text-base text-gray-500"
-                }`}
-              >
-                Email or Mobile
-              </label>
-              <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            </div>
 
             <div className="relative">
               <input
@@ -136,6 +112,37 @@ const ModernLoginPage = () => {
               </button>
             </div>
 
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-teal-500 focus:outline-none transition-all duration-200"
+              />
+              <label
+                htmlFor="confirmPassword"
+                className={`absolute left-3 transition-all duration-200 pointer-events-none bg-white px-2 ${
+                  confirmPassword
+                    ? "-top-3 text-sm text-teal-600"
+                    : "top-1/2 -translate-y-1/2 text-base text-gray-500"
+                }`}
+              >
+                Confirm Password
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors z-10 cursor-pointer"
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+
             {/* Password Validation Visual */}
             {(isFocused || password) && (
               <div className="bg-gray-50 rounded-lg p-4 space-y-2 border border-gray-200">
@@ -158,25 +165,23 @@ const ModernLoginPage = () => {
                   isValid={hasSymbol}
                   text="At least one symbol (!@#$%...)"
                 />
+                {confirmPassword && (
+                  <ValidationItem
+                    isValid={passwordsMatch}
+                    text="Passwords match"
+                  />
+                )}
               </div>
             )}
-
-            <div className="flex items-center justify-end">
-              <Link
-                to={"/forgot-password"}
-                className="text-sm text-teal-600 hover:text-teal-700 font-medium"
-              >
-                Forgot Password?
-              </Link>
-            </div>
 
             <button
               type="button"
               onClick={handleSubmit}
               disabled={
                 isLoading ||
-                !emailOrMobile ||
                 !password ||
+                !confirmPassword ||
+                !passwordsMatch ||
                 !(hasMinLength && hasCapital && hasNumber && hasSymbol)
               }
               className="w-full bg-teal-500 text-white py-3 rounded-lg font-semibold 
@@ -186,27 +191,17 @@ const ModernLoginPage = () => {
               {isLoading ? (
                 <div className="flex items-center justify-center">
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  Signing in...
+                  Submitting...
                 </div>
               ) : (
-                "Sign In"
+                "Submit"
               )}
             </button>
           </div>
-
-          <p className="mt-6 text-center text-sm text-gray-600">
-            Don't have an account?{" "}
-            <Link
-              to="/signup"
-              className="text-teal-600 hover:text-teal-700 font-semibold"
-            >
-              Sign up
-            </Link>
-          </p>
         </div>
       </div>
     </div>
   );
 };
 
-export default ModernLoginPage;
+export default ResetPassword;

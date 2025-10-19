@@ -14,11 +14,13 @@ const Home = () => {
   const { data, isLoading, error } = useGetBrandInfoQuery();
   const dispatch = useDispatch();
 
-  if (data?.data?.id) {
-    dispatch(setBrand({ brand: data?.data }));
-  }
+  // ✅ Use useEffect to handle both brand setting and error state
+  useEffect(() => {
+    if (data?.data?.id) {
+      dispatch(setBrand({ brand: data?.data }));
+    }
+  }, [data?.data, data?.data?.id, dispatch]);
 
-  // ✅ Use useEffect to handle the error state change
   useEffect(() => {
     if (error?.status === 400) {
       setIsOpen(true);
