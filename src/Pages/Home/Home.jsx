@@ -21,6 +21,9 @@ const Home = () => {
     }
   }, [data?.data, data?.data?.id, dispatch]);
 
+  // console.log(error);
+  // console.log(data);
+
   useEffect(() => {
     if (error?.status === 400) {
       setIsOpen(true);

@@ -51,6 +51,7 @@ const DeleteClient = ({ data }) => {
           </button>
           <button
             onClick={handleDelete}
+            disabled={isLoading}
             className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200"
           >
             {isLoading ? "Working..." : "Yes, Delete"}

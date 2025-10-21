@@ -57,7 +57,9 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { logout, setUser } from "../auth/authSlice";
 import { toast } from "sonner";
 
-const baseUrl = "http://localhost:5432/api/v1";
+// const baseUrl = "http://localhost:5432/api/v1";
+// const baseUrl = "http://localhost:3306/api/v1";
+const baseUrl = "https://stockify-server-gold.vercel.app/api/v1";
 
 // Cache the refresh promise to prevent multiple simultaneous refresh requests
 let refreshPromise = null;
@@ -67,6 +69,7 @@ const baseQuery = fetchBaseQuery({
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.token;
+    // console.log(token);
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -76,6 +79,8 @@ const baseQuery = fetchBaseQuery({
 
 const baseQueryWithRefreshToken = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
+
+  // console.log(result);
 
   // Handle account locked/suspended
   if (result?.error?.status === 423) {

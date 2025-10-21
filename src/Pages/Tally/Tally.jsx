@@ -4,6 +4,7 @@ import DisplayCustomer from "../../Components/Tally/DisplayCustomer";
 import { useGetClientsQuery } from "../../redux/features/clientApi/clientApi";
 import AddClient from "../../Components/Tally/AddClient";
 import { useState } from "react";
+import Error from "../Error/Error";
 
 const Tally = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,6 +33,10 @@ const Tally = () => {
     setSearchTerm(value);
   };
   // console.log(items);
+
+  if (error) {
+    return <Error />;
+  }
 
   return (
     <div className="p-4 min-h-screen">

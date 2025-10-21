@@ -187,7 +187,7 @@ const AddClient = () => {
           </div>
           {errorMessage && <p>{errorMessage}</p>}
           <button
-            disabled={formData?.name?.length == 0}
+            disabled={formData?.name?.length == 0 || isLoading}
             type="submit"
             className="w-full flex justify-center items-center bg-[#001529] text-white p-3 rounded-lg hover:bg-[#E6F4FF] transition duration-500 hover:text-[#5977FF]"
           >

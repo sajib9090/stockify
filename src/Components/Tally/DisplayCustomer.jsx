@@ -77,7 +77,9 @@ const DisplayCustomer = ({ item }) => {
           <div className="flex items-center gap-2 mt-1">
             <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />
             <p className="text-sm text-gray-500">
-              {getTimeAgo(item?.updated_at)}
+              {item?.updated_at
+                ? getTimeAgo(item?.updated_at)
+                : getTimeAgo(item?.created_at)}
             </p>
           </div>
         </div>

@@ -27,7 +27,13 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: (
-          <Suspense fallback={<h1>Loading...</h1>}>
+          <Suspense
+            fallback={
+              <h1 className="min-h-screen flex items-center justify-center">
+                Loading...
+              </h1>
+            }
+          >
             <Home />
           </Suspense>
         ),
@@ -35,7 +41,13 @@ export const router = createBrowserRouter([
       {
         path: "/tally",
         element: (
-          <Suspense fallback={<h1>Loading...</h1>}>
+          <Suspense
+            fallback={
+              <h1 className="min-h-screen flex items-center justify-center">
+                Loading...
+              </h1>
+            }
+          >
             <Tally />
           </Suspense>
         ),
@@ -43,7 +55,13 @@ export const router = createBrowserRouter([
       {
         path: "/tally/client-details",
         element: (
-          <Suspense fallback={<h1>Loading...</h1>}>
+          <Suspense
+            fallback={
+              <h1 className="min-h-screen flex items-center justify-center">
+                Loading...
+              </h1>
+            }
+          >
             <SingleClient />
           </Suspense>
         ),
@@ -51,7 +69,13 @@ export const router = createBrowserRouter([
       {
         path: "/tally/client-details/transactions",
         element: (
-          <Suspense fallback={<h1>Loading...</h1>}>
+          <Suspense
+            fallback={
+              <h1 className="min-h-screen flex items-center justify-center">
+                Loading...
+              </h1>
+            }
+          >
             <TransactionDetails />
           </Suspense>
         ),

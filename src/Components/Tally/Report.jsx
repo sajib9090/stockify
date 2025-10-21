@@ -102,7 +102,7 @@ const Report = () => {
           {/* Header with Summary */}
           <div className="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4">
             {/* Summary Cards */}
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-6">
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 border border-white/20">
                 <div className="flex items-center space-x-2 mb-2">
                   <div className="w-6 h-6 rounded-lg bg-red-500/20 flex items-center justify-center">

@@ -11,7 +11,7 @@ const VerifyOTP = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(300);
   const [canResend, setCanResend] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -135,7 +135,7 @@ const VerifyOTP = () => {
 
     setErrorMessage("");
     setOtp(["", "", "", "", "", ""]);
-    setTimeLeft(30);
+    setTimeLeft(300);
     setCanResend(false);
 
     try {

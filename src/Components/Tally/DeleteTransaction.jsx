@@ -91,6 +91,7 @@ const DeleteTransaction = ({ transaction }) => {
               No, Cancel
             </button>
             <button
+              disabled={isLoading}
               onClick={handleDelete}
               className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200"
             >
