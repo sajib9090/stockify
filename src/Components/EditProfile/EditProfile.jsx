@@ -7,6 +7,7 @@ import { getCroppedImg } from "../../Utils/cropImage";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/features/auth/authSlice";
 import ReactCrop from "react-image-crop";
+import { Link } from "react-router";
 
 const EditProfile = ({ isOpen, setIsOpen, user }) => {
   const [editUserProfile, { isLoading }] = useEditUserProfileMutation();
@@ -303,6 +304,14 @@ const EditProfile = ({ isOpen, setIsOpen, user }) => {
             </div>
           </form>
         </div>
+
+        <Link
+          onClick={() => setIsOpen(false)}
+          className="flex justify-center hover:text-[#009099] underline"
+          to={"/user-activity"}
+        >
+          Check Activity
+        </Link>
       </Modal>
 
       {/* Crop Modal */}

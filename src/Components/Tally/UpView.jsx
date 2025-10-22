@@ -10,7 +10,7 @@ const UpView = ({ totalReceivable, totalPayable }) => {
             Total Due
           </span>
         </div>
-        <div className="text-3xl font-light text-gray-900 mb-1">
+        <div className="text-lg md:text-xl lg:text-3xl font-light text-gray-900 mb-1">
           <CurrencyFormatter value={totalPayable} />
         </div>
         <div className="flex items-center text-xs text-red-600 font-light">
@@ -26,7 +26,7 @@ const UpView = ({ totalReceivable, totalPayable }) => {
             Total Amount
           </span>
         </div>
-        <div className="text-3xl font-light text-gray-900 mb-1">
+        <div className="text-lg md:text-xl lg:text-3xl font-light text-gray-900 mb-1">
           <CurrencyFormatter value={totalReceivable} />
         </div>
         <div className="flex items-center text-xs text-green-600 font-light">

@@ -60,6 +60,12 @@ const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    getUserActivity: builder.query({
+      query: () => ({
+        url: "/users/user/user-session",
+      }),
+      providesTags: ["User"],
+    }),
   }),
 });
 
@@ -72,4 +78,5 @@ export const {
   useRegenerateOTPMutation,
   useForgotPasswordMutation,
   useSetNewPasswordMutation,
+  useGetUserActivityQuery,
 } = authApi;

@@ -13,6 +13,7 @@ const SingleClient = lazy(() => import("../Pages/Tally/Client/SingleClient"));
 const TransactionDetails = lazy(() =>
   import("../Pages/Tally/TransactionDetails/TransactionDetails")
 );
+const UserActivity = lazy(() => import("../Pages/UserActivity/UserActivity"));
 
 export const router = createBrowserRouter([
   {
@@ -77,6 +78,20 @@ export const router = createBrowserRouter([
             }
           >
             <TransactionDetails />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/user-activity",
+        element: (
+          <Suspense
+            fallback={
+              <h1 className="min-h-screen flex items-center justify-center">
+                Loading...
+              </h1>
+            }
+          >
+            <UserActivity />
           </Suspense>
         ),
       },

@@ -7,8 +7,8 @@ const Profile = ({ user }) => {
   return (
     <>
       <div
-        title="Double Click to Edit Profile"
-        onDoubleClick={() => setIsOpen(!isOpen)}
+        title="Click to Edit Profile"
+        onClick={() => setIsOpen(!isOpen)}
         className="h-[42px] w-[207px] flex items-center space-x-4 cursor-pointer"
       >
         <div className="relative">
