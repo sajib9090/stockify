@@ -66,6 +66,20 @@ const authApi = baseApi.injectEndpoints({
       }),
       providesTags: ["User"],
     }),
+    logoutSpecificSession: builder.mutation({
+      query: (data) => ({
+        url: `/users/user/user-session-logout/${data?.sessionId}`,
+        method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
+    logoutAllSessions: builder.mutation({
+      query: () => ({
+        url: `/users/user/user-session-logout-all`,
+        method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -79,4 +93,6 @@ export const {
   useForgotPasswordMutation,
   useSetNewPasswordMutation,
   useGetUserActivityQuery,
+  useLogoutSpecificSessionMutation,
+  useLogoutAllSessionsMutation,
 } = authApi;
